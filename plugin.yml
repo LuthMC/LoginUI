@@ -1,0 +1,4 @@
+name: LoginUI
+main: Luthfi\LoginUI\Main
+version: 1.0.0
+api: 5.0.0
