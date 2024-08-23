@@ -30,65 +30,60 @@ class EventListener implements Listener {
     }
 
     private function sendRegisterForm(Player $player): void {
-        $form = new CustomForm(function (Player $player, ?array $data) {
-            if ($data === null) return;
+    $form = new CustomForm("Register", function (Player $player, ?array $data) {
+        if ($data === null) return;
 
-            $username = $data[0];
-            $password = $data[1];
-            $pin = $this->plugin->getConfig()->get("enable-pin") ? $data[2] : null;
+        $username = $data[0];
+        $password = $data[1];
+        $pin = $this->plugin->getConfig()->get("enable-pin") ? $data[2] : null;
+        $this->playerDataManager->registerPlayer($player, $password, $pin);
+        $player->sendMessage($this->plugin->getConfig()->get("messages")["register-success"]);
 
-            $this->playerDataManager->registerPlayer($player, $password, $pin);
-
-            $player->sendMessage($this->plugin->getConfig()->get("messages")["register-success"]);
-
-            if ($pin !== null) {
-                $this->sendPinConfirmationForm($player);
-            }
-        });
-
-        $form->setTitle("Register");
-        $form->addInput("Username:");
-        $form->addInput("Password:");
-
-        if ($this->plugin->getConfig()->get("enable-pin")) {
-            $form->addInput("PIN:");
+        if ($pin !== null) {
+            $this->sendPinConfirmationForm($player);
         }
+    });
 
-        $player->sendForm($form);
+    $form->addInput("Username:");
+    $form->addInput("Password:");
+
+    if ($this->plugin->getConfig()->get("enable-pin")) {
+        $form->addInput("PIN:");
     }
+    $player->sendForm($form);
+ }
 
     private function sendLoginForm(Player $player): void {
-        if (!isset($this->loginAttempts[$player->getName()])) {
-            $this->loginAttempts[$player->getName()] = 0;
-        }
-
-        $form = new CustomForm(function (Player $player, ?array $data) {
-            if ($data === null) return;
-
-            $username = $data[0];
-            $password = $data[1];
-
-            if ($this->playerDataManager->validateLogin($player, $password)) {
-                $player->sendMessage($this->plugin->getConfig()->get("messages")["login-success"]);
-                unset($this->loginAttempts[$player->getName()]);
-            } else {
-                $this->loginAttempts[$player->getName()]++;
-                if ($this->loginAttempts[$player->getName()] >= $this->plugin->getConfig()->get("max-login-attempts")) {
-                    $player->sendMessage($this->plugin->getConfig()->get("messages")["max-attempts"]);
-                    $player->kick($this->plugin->getConfig()->get("messages")["max-attempts"], false);
-                } else {
-                    $player->sendMessage($this->plugin->getConfig()->get("messages")["login-fail"]);
-                    $this->sendLoginForm($player);
-                }
-            }
-        });
-
-        $form->setTitle("Login");
-        $form->addInput("Username:");
-        $form->addInput("Password:");
-
-        $player->sendForm($form);
+    if (!isset($this->loginAttempts[$player->getName()])) {
+        $this->loginAttempts[$player->getName()] = 0;
     }
+
+    $form = new CustomForm("Login", function (Player $player, ?array $data) {
+        if ($data === null) return;
+
+        $username = $data[0];
+        $password = $data[1];
+
+        if ($this->playerDataManager->validateLogin($player, $password)) {
+            $player->sendMessage($this->plugin->getConfig()->get("messages")["login-success"]);
+            unset($this->loginAttempts[$player->getName()]);
+        } else {
+            $this->loginAttempts[$player->getName()]++;
+            if ($this->loginAttempts[$player->getName()] >= $this->plugin->getConfig()->get("max-login-attempts")) {
+                $player->sendMessage($this->plugin->getConfig()->get("messages")["max-attempts"]);
+                $player->kick($this->plugin->getConfig()->get("messages")["max-attempts"], false);
+            } else {
+                $player->sendMessage($this->plugin->getConfig()->get("messages")["login-fail"]);
+                $this->sendLoginForm($player);
+            }
+        }
+    });
+
+    $form->addInput("Username:");
+    $form->addInput("Password:");
+
+    $player->sendForm($form);
+}
 
     private function sendPinConfirmationForm(Player $player): void {
         $form = new ModalForm("Confirmation", "Are you sure you want to proceed?", "Yes", "No", function (Player $player, ?bool $data) {
