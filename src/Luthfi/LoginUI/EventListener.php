@@ -81,6 +81,16 @@ class EventListener implements Listener {
         return true;
     }
 
+    if ($command->getName() === "viewlogin") {
+        if (!$sender->hasPermission("login.vl")) {
+            $sender->sendMessage("You don't have permission to use this command.");
+            return true;
+        }
+
+        $this->playerDataManager->viewPlayerLoginAttempts($username);
+        return true;
+    }
+
     return false;
     }
     
