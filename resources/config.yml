@@ -1,0 +1,19 @@
+# LoginUI Configuration
+# Website: https://github.com/LuthMC/LoginUI
+
+# Enable or disable the PIN feature.
+enable-pin: true
+
+# Maximum number of login attempts before kicking the player.
+max-login-attempts: 3
+
+messages:
+  register-success: "You have successfully registered!"
+  login-success: "You have successfully logged in!"
+  login-fail: "Incorrect login credentials. Please try again."
+  max-attempts: "You have exceeded the maximum number of login attempts. You have been kicked."
+
+additional-messages:
+  pin-prompt: "Please enter your PIN:"
+  pin-success: "Your PIN has been set successfully!"
+  pin-fail: "Incorrect PIN. Please try again."
