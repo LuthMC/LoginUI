@@ -81,16 +81,6 @@ class EventListener implements Listener {
         return true;
     }
 
-    if ($command->getName() === "viewlogin") {
-        if (!$sender->hasPermission("login.vl")) {
-            $sender->sendMessage("You don't have permission to use this command.");
-            return true;
-        }
-
-        $this->playerDataManager->viewPlayerLoginAttempts($username);
-        return true;
-    }
-
     return false;
     }
     
@@ -165,82 +155,66 @@ class EventListener implements Listener {
     }
 
     private function sendProfileForm(Player $player): void {
-    $form = new CustomForm(
-        function (Player $player, ?array $data) {
-            if ($data === null) return;
+    $form = new CustomForm("Update Profile", function (Player $player, ?array $data) {
+        if ($data === null) return;
 
-            $newPassword = $data[0];
-            $newPin = $this->plugin->getConfig()->get("enable-pin") ? $data[1] : null;
+        $newPassword = $data[0];
+        $newPin = $this->plugin->getConfig()->get("enable-pin") ? $data[1] : null;
 
-            $this->updatePlayerProfile($player, $newPassword, $newPin);
+        $this->updatePlayerProfile($player, $newPassword, $newPin);
 
-            $player->sendMessage($this->plugin->getConfig()->get("messages")["profile-update-success"]);
-        },
-        "Update Profile",
-        [
-            ["New Password:"],
-            $this->plugin->getConfig()->get("enable-pin") ? ["New PIN:"] : []
-        ]
-    );
+        $player->sendMessage($this->plugin->getConfig()->get("messages")["profile-update-success"]);
+    });
+
+    $form->addInput("New Password:");
+    if ($this->plugin->getConfig()->get("enable-pin")) {
+        $form->addInput("New PIN:");
+    }
 
     $player->sendForm($form);
  }
     
     private function sendResetPasswordForm(Player $player): void {
-    $fields = [
-        ["New Password:"],
-    ];
+    $form = new CustomForm("Reset Password", function (Player $player, ?array $data) {
+        if ($data === null) return;
 
+        $newPassword = $data[0];
+        $newPin = $this->plugin->getConfig()->get("enable-pin") ? $data[1] : null;
+
+        $this->resetPlayerPassword($player, $newPassword, $newPin);
+
+        $player->sendMessage($this->plugin->getConfig()->get("messages")["reset-success"]);
+    });
+
+    $form->addInput("New Password:");
     if ($this->plugin->getConfig()->get("enable-pin")) {
-        $fields[] = ["New PIN:"];
+        $form->addInput("New PIN:");
     }
-
-    $form = new CustomForm(
-        function (Player $player, ?array $data) {
-            if ($data === null) return;
-
-            $newPassword = $data[0];
-            $newPin = $this->plugin->getConfig()->get("enable-pin") ? $data[1] : null;
-
-            $this->resetPlayerPassword($player, $newPassword, $newPin);
-
-            $player->sendMessage($this->plugin->getConfig()->get("messages")["reset-success"]);
-        },
-        "Reset Password",
-        $fields
-    );
 
     $player->sendForm($form);
-    }
+ }
     
     private function sendAdminResetPasswordForm(CommandSender $sender, string $username): void {
     if (!$sender instanceof Player) return;
 
-    $fields = [
-        ["New Password:"],
-    ];
+    $form = new CustomForm("Admin Reset Password", function (Player $player, ?array $data) use ($username) {
+        if ($data === null) return;
 
+        $newPassword = $data[0];
+        $newPin = $this->plugin->getConfig()->get("enable-pin") ? $data[1] : null;
+
+        $this->resetPlayerPasswordByAdmin($username, $newPassword, $newPin);
+
+        $player->sendMessage($this->plugin->getConfig()->get("messages")["admin-reset-success"]);
+    });
+
+    $form->addInput("New Password:");
     if ($this->plugin->getConfig()->get("enable-pin")) {
-        $fields[] = ["New PIN:"];
+        $form->addInput("New PIN:");
     }
-
-    $form = new CustomForm(
-        function (Player $player, ?array $data) use ($username) {
-            if ($data === null) return;
-
-            $newPassword = $data[0];
-            $newPin = $this->plugin->getConfig()->get("enable-pin") ? $data[1] : null;
-
-            $this->resetPlayerPasswordByAdmin($username, $newPassword, $newPin);
-
-            $player->sendMessage($this->plugin->getConfig()->get("messages")["admin-reset-success"]);
-        },
-        "Admin Reset Password",
-        $fields
-    );
 
     $sender->sendForm($form);
-    }
+ }
     
     private function handlePlayerJoin(Player $player): void {
     $data = yaml_parse_file($this->dataFile);
