@@ -14,10 +14,12 @@ class EventListener implements Listener {
     private $plugin;
     private $loginAttempts = [];
     private $playerDataManager;
+    private $dataFile;
 
     public function __construct(Main $plugin) {
         $this->plugin = $plugin;
         $this->playerDataManager = new PlayerDataManager($plugin);
+        $this->dataFile = $plugin->getDataFolder() . "players.yml";
     }
 
     public function onPlayerJoin(PlayerJoinEvent $event): void {
