@@ -21,12 +21,8 @@ class EventListener implements Listener {
     }
 
     public function onPlayerJoin(PlayerJoinEvent $event): void {
-        $player = $event->getPlayer();
-        if (!$player->hasPlayedBefore()) {
-            $this->sendRegisterForm($player);
-        } else {
-            $this->sendLoginForm($player);
-        }
+    $player = $event->getPlayer();
+    $this->handlePlayerJoin($player);
     }
 
     private function sendRegisterForm(Player $player): void {
@@ -97,5 +93,16 @@ class EventListener implements Listener {
         });
 
         $player->sendForm($form);
+    }
+
+    private function handlePlayerJoin(Player $player): void {
+    $data = yaml_parse_file($this->dataFile);
+    $username = strtolower($player->getName());
+
+    if (isset($data[$username])) {
+        $this->sendLoginForm($player);
+    } else {
+        $this->sendRegisterForm($player);
+        }
     }
 }
