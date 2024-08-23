@@ -4,3 +4,32 @@ main: Luthfi\LoginUI\Main
 api: 5.0.0
 author: Luthfi
 description: A simple LoginUI plugins.
+
+commands:
+  profile:
+    description: Update your profile.
+    permission: login.profile
+  resetpassword:
+    description: Reset your password.
+    permission: login.rp
+  adminresetpassword:
+    description: Reset players password.
+    permission: login.arp
+  deleteaccount:
+    description: Delete a players accounts.
+    permission: login.da
+  viewlogin:
+    description: View login attempts.
+    permission: login.vl
+
+permissions:
+  login.profile:
+    default: true
+  login.rp:
+    default: true
+  login.arp:
+    default: op
+  login.da:
+    default: op
+  login.vl:
+    default: op
