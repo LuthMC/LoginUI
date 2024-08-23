@@ -18,30 +18,27 @@ class PlayerDataManager {
     }
 
     public function registerPlayer(Player $player, string $password, ?string $pin): void {
-        $data = yaml_parse_file($this->dataFile);
-        $username = strtolower($player->getName());
+    $data = yaml_parse_file($this->dataFile);
+    $username = strtolower($player->getName());
 
-        $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
-        $hashedPin = $pin !== null ? password_hash($pin, PASSWORD_BCRYPT) : null;
+    $data[$username] = [
+        "password" => $password,
+        "pin" => $pin
+    ];
 
-        $data[$username] = [
-            "password" => $hashedPassword,
-            "pin" => $hashedPin
-        ];
-
-        file_put_contents($this->dataFile, yaml_emit($data));
-    }
+    file_put_contents($this->dataFile, yaml_emit($data));
+  }
 
     public function validateLogin(Player $player, string $password): bool {
-        $data = yaml_parse_file($this->dataFile);
-        $username = strtolower($player->getName());
+    $data = yaml_parse_file($this->dataFile);
+    $username = strtolower($player->getName());
 
-        if (!isset($data[$username])) {
-            return false;
-        }
-
-        return password_verify($password, $data[$username]["password"]);
+    if (!isset($data[$username])) {
+        return false;
     }
+
+    return $password === $data[$username]["password"];
+  }
 
     public function validatePin(Player $player, string $pin): bool {
         $data = yaml_parse_file($this->dataFile);
