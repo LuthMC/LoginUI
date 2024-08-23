@@ -90,9 +90,9 @@ class EventListener implements Listener {
             if ($data === null) return;
 
             if ($data) {
-                $player->sendMessage("Yes!");
+                $player->sendMessage("Account Saved!");
             } else {
-                $player->sendMessage("No!");
+                $player->sendMessage("Account Not Saved!");
             }
         });
 
