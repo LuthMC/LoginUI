@@ -1,4 +1,6 @@
 name: LoginUI
-main: Luthfi\LoginUI\Main
 version: 1.0.0
+main: Luthfi\LoginUI\Main
 api: 5.0.0
+author: Luthfi
+description: A simple LoginUI plugins.
