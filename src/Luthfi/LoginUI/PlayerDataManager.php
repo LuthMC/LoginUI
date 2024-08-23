@@ -51,21 +51,6 @@ class PlayerDataManager {
         return password_verify($pin, $data[$username]["pin"]);
     }
 
-    public function validateLogin(Player $player, string $password): bool {
-    $data = yaml_parse_file($this->dataFile);
-    $username = strtolower($player->getName());
-
-    if (!isset($data[$username])) {
-        return false;
-    }
-
-    $isPasswordValid = ($password === $data[$username]["password"]);
-
-    $this->logLoginAttempt($username, $isPasswordValid);
-
-    return $isPasswordValid;
-    }
-
     private function logLoginAttempt(string $username, bool $success): void {
     $data = yaml_parse_file($this->dataFile);
 
