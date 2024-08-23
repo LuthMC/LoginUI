@@ -6,7 +6,7 @@ use pocketmine\event\Listener;
 use pocketmine\event\player\PlayerJoinEvent;
 use pocketmine\player\Player;
 use pocketmine\command;
-use pocketmine\command/CommandSender;
+use pocketmine\command\CommandSender;
 use Luthfi\LoginUI\libs\LootSpace369\LSFormAPI\SimpleForm;
 use Luthfi\LoginUI\libs\LootSpace369\LSFormAPI\CustomForm;
 use Luthfi\LoginUI\libs\LootSpace369\LSFormAPI\ModalForm;
