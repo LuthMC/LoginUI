@@ -208,27 +208,6 @@ class EventListener implements Listener {
         }
     }
 
-   public function viewPlayerLoginAttempts(CommandSender $sender, string $username): void {
-    $data = yaml_parse_file($this->dataFile);
-
-    if (!isset($data[$username])) {
-        $sender->sendMessage("No data found for this player.");
-        return;
-    }
-
-    if (!isset($data[$username]["login_attempts"])) {
-        $sender->sendMessage("No login attempts recorded for this player.");
-        return;
-    }
-
-    $sender->sendMessage("Login attempts for " . $username . ":");
-    foreach ($data[$username]["login_attempts"] as $attempt) {
-        $dateTime = date("Y-m-d H:i:s", $attempt["timestamp"]);
-        $status = $attempt["success"] ? "Success" : "Failed";
-        $sender->sendMessage("- [$dateTime] $status");
-      }
-   }
-
    public function updatePlayerProfile(Player $player, string $newPassword, ?string $newPin): void {
     $data = yaml_parse_file($this->dataFile);
     $username = strtolower($player->getName());
