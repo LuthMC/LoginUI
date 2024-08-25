@@ -50,4 +50,18 @@ class PlayerDataManager {
 
         return password_verify($pin, $data[$username]["pin"]);
     }
+
+   public function deleteAccount(Player $player): bool {
+    $data = yaml_parse_file($this->dataFile);
+    $username = strtolower($player->getName());
+
+    if (!isset($data[$username])) {
+        return false;
+    }
+
+    unset($data[$username]);
+    file_put_contents($this->dataFile, yaml_emit($data));
+
+    return true;
+   }
 }
