@@ -18,9 +18,6 @@ commands:
   deleteaccount:
     description: Delete a players accounts.
     permission: login.da
-  viewlogin:
-    description: View login attempts.
-    permission: login.vl
 
 permissions:
   login.profile:
@@ -30,6 +27,4 @@ permissions:
   login.arp:
     default: op
   login.da:
-    default: op
-  login.vl:
     default: op
