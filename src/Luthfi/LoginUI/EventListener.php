@@ -242,13 +242,4 @@ class EventListener implements Listener {
 
     file_put_contents($this->dataFile, yaml_emit($data));
    }
-
-   public function deletePlayerAccount(string $username): void {
-    $data = yaml_parse_file($this->dataFile);
-
-    if (isset($data[$username])) {
-        unset($data[$username]);
-        file_put_contents($this->dataFile, yaml_emit($data));
-      }
-   }
 }
