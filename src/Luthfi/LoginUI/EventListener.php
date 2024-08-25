@@ -30,73 +30,44 @@ class EventListener implements Listener {
     }
 
     public function onCommand(CommandSender $sender, Command $command, string $label, array $args): bool {
-    if ($command->getName() === "profile") {
-        if ($sender instanceof Player) {
+    if (!$sender instanceof Player) {
+        $sender->sendMessage("This command can only be used in-game.");
+        return false;
+    }
+
+    switch ($command->getName()) {
+        case "profile":
             $this->sendProfileForm($sender);
-        } else {
-            $sender->sendMessage("This command can only be used in-game.");
-        }
-        return true;
-    }
-
-    if ($command->getName() === "resetpassword") {
-        if ($sender instanceof Player) {
+            break;
+        case "resetpassword":
             $this->sendResetPasswordForm($sender);
-        } else {
-            $sender->sendMessage("This command can only be used in-game.");
-        }
-        return true;
+            break;
+        case "adminresetpassword":
+            if (isset($args[0])) {
+                $this->sendAdminResetPasswordForm($sender, $args[0]);
+            } else {
+                $sender->sendMessage("Please provide a username.");
+            }
+            break;
+        case "deleteaccount":
+            if ($this->playerDataManager->deleteAccount($sender)) {
+                $sender->sendMessage("Account has been successfully deleted.");
+            } else {
+                $sender->sendMessage("No account found to delete.");
+            }
+            break;
+        default:
+            return false;
     }
-
-    $username = strtolower($args[0] ?? '');
-
-    if ($command->getName() === "adminresetpassword") {
-        if (!$sender->hasPermission("login.arp")) {
-            $sender->sendMessage("You don't have permission to use this command.");
-            return true;
-        }
-
-        if (empty($username)) {
-            $sender->sendMessage("Please specify a username.");
-            return true;
-        }
-
-        $this->sendAdminResetPasswordForm($sender, $username);
-        return true;
-    }
-
-    if ($command->getName() === "deleteaccount") {
-        if (!$sender->hasPermission("login.da")) {
-            $sender->sendMessage("You don't have permission to use this command.");
-            return true;
-        }
-
-        if (empty($username)) {
-            $sender->sendMessage("Please specify a username.");
-            return true;
-        }
-
-        $this->playerDataManager->deletePlayerAccount($username);
-        $sender->sendMessage("Account deleted successfully.");
-        return true;
-    }
-
-    if ($command->getName() === "viewlogin") {
-        if (!$sender->hasPermission("login.vl")) {
-            $sender->sendMessage("You don't have permission to use this command.");
-            return true;
-        }
-
-        $this->playerDataManager->viewPlayerLoginAttempts($username);
-        return true;
-    }
-
-    return false;
-    }
+    return true;
+ }
     
     private function sendRegisterForm(Player $player): void {
     $form = new CustomForm("Register", function (Player $player, ?array $data) {
-        if ($data === null) return;
+        if ($data === null) {
+            $player->kick("You must register to play on this server.");
+            return;
+        }
 
         $username = $data[0];
         $password = $data[1];
