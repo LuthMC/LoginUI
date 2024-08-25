@@ -65,13 +65,22 @@ class EventListener implements Listener {
     private function sendRegisterForm(Player $player): void {
     $form = new CustomForm("Register", function (Player $player, ?array $data) {
         if ($data === null) {
-            $player->kick("You must register to play on this server.");
+            $player->kick("You must complete the registration to play.");
             return;
         }
 
         $username = $data[0];
         $password = $data[1];
         $pin = $this->plugin->getConfig()->get("enable-pin") ? $data[2] : null;
+
+        if ($this->plugin->getConfig()->get("enable-pin")) {
+            if (!is_numeric($pin)) {
+                $player->sendMessage("PIN must be a numeric value. Please try again.");
+                $this->sendRegisterForm($player);
+                return;
+            }
+        }
+
         $this->playerDataManager->registerPlayer($player, $password, $pin);
         $player->sendMessage($this->plugin->getConfig()->get("messages")["register-success"]);
 
@@ -86,6 +95,7 @@ class EventListener implements Listener {
     if ($this->plugin->getConfig()->get("enable-pin")) {
         $form->addInput("PIN:");
     }
+
     $player->sendForm($form);
  }
 
