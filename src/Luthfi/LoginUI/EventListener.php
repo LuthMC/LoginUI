@@ -5,7 +5,7 @@ namespace Luthfi\LoginUI;
 use pocketmine\event\Listener;
 use pocketmine\event\player\PlayerJoinEvent;
 use pocketmine\player\Player;
-use pocketmine\command;
+use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use Luthfi\LoginUI\libs\LootSpace369\LSFormAPI\SimpleForm;
 use Luthfi\LoginUI\libs\LootSpace369\LSFormAPI\CustomForm;
@@ -165,7 +165,7 @@ class EventListener implements Listener {
     }
 
     private function sendProfileForm(Player $player): void {
-    $form = new CustomForm(function (Player $player, ?array $data) {
+    $form = new CustomForm("Update Profile", function (Player $player, ?array $data) {
         if ($data === null) return;
 
         $newPassword = $data[0];
@@ -176,17 +176,16 @@ class EventListener implements Listener {
         $player->sendMessage($this->plugin->getConfig()->get("messages")["profile-update-success"]);
     });
 
-    $form->setTitle("Update Profile");
     $form->addInput("New Password:");
     if ($this->plugin->getConfig()->get("enable-pin")) {
         $form->addInput("New PIN:");
     }
 
     $player->sendForm($form);
-    }
+ }
     
     private function sendResetPasswordForm(Player $player): void {
-    $form = new CustomForm(function (Player $player, ?array $data) {
+    $form = new CustomForm("Reset Password", function (Player $player, ?array $data) {
         if ($data === null) return;
 
         $newPassword = $data[0];
@@ -197,19 +196,18 @@ class EventListener implements Listener {
         $player->sendMessage($this->plugin->getConfig()->get("messages")["reset-success"]);
     });
 
-    $form->setTitle("Reset Password");
     $form->addInput("New Password:");
     if ($this->plugin->getConfig()->get("enable-pin")) {
         $form->addInput("New PIN:");
     }
 
     $player->sendForm($form);
-    }
+ }
     
     private function sendAdminResetPasswordForm(CommandSender $sender, string $username): void {
     if (!$sender instanceof Player) return;
 
-    $form = new CustomForm(function (Player $player, ?array $data) use ($username) {
+    $form = new CustomForm("Admin Reset Password", function (Player $player, ?array $data) use ($username) {
         if ($data === null) return;
 
         $newPassword = $data[0];
@@ -220,14 +218,13 @@ class EventListener implements Listener {
         $player->sendMessage($this->plugin->getConfig()->get("messages")["admin-reset-success"]);
     });
 
-    $form->setTitle("Admin Reset Password");
     $form->addInput("New Password:");
     if ($this->plugin->getConfig()->get("enable-pin")) {
         $form->addInput("New PIN:");
     }
 
     $sender->sendForm($form);
-    }
+ }
     
     private function handlePlayerJoin(Player $player): void {
     $data = yaml_parse_file($this->dataFile);
